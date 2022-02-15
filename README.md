@@ -17,5 +17,4 @@ $ python bot.py
 
 
 ## 📌 Image
-![KakaoTalk_20220215_180705096](https://user-images.githubusercontent.com/82564045/154030067-4c714216-b500-4df2-b4c2-570db7e94a47.png)
-
+![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/82564045/154053689-cf3c1d1d-e164-453b-b1a2-7c6b77ba39cb.gif)
