@@ -4,6 +4,7 @@ NFT 지갑 알림 봇
 ## 📌 Usage
 ```
 $ git clone https://github.com/GeunYeongii/nefty-telegram-bot.git
+$ cd nefty-telegram-bot
 $ pip install virtualenv
 $ virtualenv env
 $ env/Script/acticate.bat
