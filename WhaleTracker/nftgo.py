@@ -4,6 +4,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from currency_converter import CurrencyConverter
 from .utils import func_args_preprocessing
+from datetime import datetime
 
 class nftgoAPI :
     __API_URL_BASE = 'https://api.nftgo.io/api/v1/'
@@ -200,6 +201,22 @@ class nftgoAPI :
             
         return args
     
+    def get_nft_time(self,args=[],**kwargs) :
+        """__고래가 nft를 구매한 시간 리스트__
+        
+        Returns:
+            __type__: __list__
+        """
+        for nft in self.data :
+            time = nft['time']/1000
+            minute = str(datetime.now()-datetime.fromtimestamp(time))
+                   
+            if int(minute[:1]) >= 1 :
+                args.append('1시간')
+            else :
+                args.append(minute[2:4]+'분')    
+            
+        return args
     # ---------- Whales Bought Collection List ----------#
 
     @func_args_preprocessing
