@@ -19,7 +19,8 @@ bot = telebot.TeleBot(APITOKEN)
 
 def gen_markup():
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton("정보 조회하기!", callback_data="true"))
+    markup.add(InlineKeyboardButton("거개량 순위 조회하기!", callback_data="trade"),
+               InlineKeyboardButton("고래 조회하기!", callback_data="spec"))
     return markup
 
 
@@ -32,15 +33,18 @@ def send_welcome(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     try:
-        names = nft.get_name_list()
-        prices = nft.get_price_list('KRW','ETH')
-        changes = nft.get_change_list()
-        buyers = nft.get_buyer_list()
-        images = nft.get_nft_image()
-        times = nft.get_nft_time()
-        for name,price,change,buyer,image,time in zip(names,prices,changes,buyers,images,times) :            
-            # nft 정보를 HTML형식으로 메세지 보내기
-            bot.send_message(call.from_user.id,"<b>이름 :</b> {0}({8} 전)\n<b>{1} :</b> {2}\n<b>{3} : </b> {4}원\n<b>가격 변동률 :</b> {5}%\n<b>구매자 :</b> <a href='https://opensea.io/{6}'>🔗Opensea Link</a>\n<b>NFT :</b> <a href='{7}'> ▶ 이미지 보러가기</a>\n<b>Time :</b> {8} 전".format(name,price['ETH'][1],price['ETH'][0],price['KRW'][1],format(price['KRW'][0],','),change['percent'],buyer,image,time),parse_mode="HTML")
+        if(call.data=='trade') :
+            names = nft.get_name_list()
+            prices = nft.get_price_list('KRW','ETH')
+            changes = nft.get_change_list()
+            buyers = nft.get_buyer_list()
+            images = nft.get_nft_image()
+            times = nft.get_nft_time()
+            for name,price,change,buyer,image,time in zip(names,prices,changes,buyers,images,times) :            
+                # nft 정보를 HTML형식으로 메세지 보내기
+                bot.send_message(call.from_user.id,"<b>이름 :</b> {0}({8} 전)\n<b>{1} :</b> {2}\n<b>{3} : </b> {4}원\n<b>가격 변동률 :</b> {5}%\n<b>구매자 :</b> <a href='https://opensea.io/{6}'>🔗Opensea Link</a>\n<b>NFT :</b> <a href='{7}'> ▶ 이미지 보러가기</a>\n<b>Time :</b> {8} 전".format(name,price['ETH'][1],price['ETH'][0],price['KRW'][1],format(price['KRW'][0],','),change['percent'],buyer,image,time),parse_mode="HTML")
+        elif(call.data=='spec') :
+            """https://nftgo.io/api/v1/whales-activity-by-addr?addr=0x0667640ab57cb909b343157d718651ea49141a75&cid=all&action=buy&to=1646578799999&scroll=0&limit=15&isListed=1"""
     except:
         bot.send_message(call.from_user.id, "문제가 발생 했습니다. 다시 클릭 해주세요.")
     
