@@ -1,7 +1,6 @@
 import requests
 
-def assets() :
-    owner = "0x000001f568875F378Bf6d170B790967FE429C81A"
+def assets(owner) :
     params = {
         "owner" : owner,
         "limit" : 5,
