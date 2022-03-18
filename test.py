@@ -1,9 +1,11 @@
 
+from ast import parse
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 from WhaleTracker.nftgo import nftgoAPI
 import requests
+import urllib
 
 # -- Whale Tracker -- #
 nft = nftgoAPI()
@@ -15,7 +17,7 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console..
 
 
-APITOKEN = 'API-KEY'
+APITOKEN = 'API-Token'
 bot = telebot.TeleBot(APITOKEN)
 
 def gen_markup():
@@ -25,21 +27,33 @@ def gen_markup():
                InlineKeyboardButton("고래 거래 기록", callback_data="whales"))
     return markup
 
-def assets(owner) :
-    params = {
-        "owner" : owner,
-        "limit" : 5,
-        "offset" : 0
-    }
-    return requests.get("https://testnets-api.opensea.io/api/v1/assets", params=params).json()
-
 
 def wallet_handler(message) :
     address = message.text
-    data = assets(address)
-    print(data)
-    bot.send_message(message.from_user.id, "- data section -")
-
+    
+    # Buy
+    addr = requests.get(f"https://nftgo.io/api/v1/whales-activity-by-addr?addr={address}&cid=all&action=buy&to=1647615599999&scroll=0&limit=15&isListed=-1").json()
+    data = addr['data'][0]
+    nft_name = data['nft']['name']
+    price = data['tokenUnitPrice']
+    image = data['nft']['image']
+    bot.send_message(message.chat.id,f"<b>구매한 nft : </b>{nft_name}\n<b>ETH : </b>{price}\n<a href='{image}'>Image</a>",parse_mode="HTML")
+    
+    # Sold
+    addr = requests.get(f"https://nftgo.io/api/v1/whales-activity-by-addr?addr={address}&cid=all&action=sell&to=1647615599999&scroll=0&limit=15&isListed=-1").json()
+    data = addr['data'][0]
+    nft_name = data['nft']['name']
+    price = data['tokenUnitPrice']
+    image = data['nft']['image']
+    bot.send_message(message.chat.id,f"<b>판매한 nft : </b>{nft_name}\n<b>ETH : </b>{price}\n<a href='{image}'>Image</a>",parse_mode="HTML")
+    
+    
+    # sendPhoto
+    
+def fp_handler(message) :
+    collection = message.text
+    bot.send_message(message.chat.id,f"{collection} 찾는중.....")
+    
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -64,6 +78,10 @@ def callback_query(call):
         elif(call.data=='wallet') :
             sent_msg = bot.send_message(call.from_user.id, "주소를 입력해주세요!")
             bot.register_next_step_handler(sent_msg, wallet_handler)
+        elif(call.data=='fp') :
+            sent_msg = bot.send_message(call.from_user.id,"추적하고자 하는 프로젝트의 이름을 입력해주세요!")
+            bot.register_next_step_handler(sent_msg,fp_handler)
+            
     except:
         bot.send_message(call.from_user.id, "문제가 발생 했습니다. 다시 클릭 해주세요.")
     # https://nftgo.io/api/v1/whales-activity-by-addr?addr=0x0667640ab57cb909b343157d718651ea49141a75&cid=all&action=buy&to=1646578799999&scroll=0&limit=15&isListed=1
